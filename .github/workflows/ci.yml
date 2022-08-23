@@ -5,7 +5,8 @@ name: Node.js CI task every branch
 
 on:
   pull_request:
-    branches: [ feature*/*, dev, pre-prod, prod ]
+    branches: develop 
+      # [ feature*/*, dev, pre-prod, prod ]
 
 jobs:
   build_app:

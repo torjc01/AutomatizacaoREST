@@ -3,188 +3,95 @@
 [![License](https://img.shields.io/badge/Licence-LiLiQ--P-blue)](https://github.com/CQEN-QDCE/.github/blob/main/LICENCE.md)
 
 ---
-
-<div>
-    <img src="https://github.com/CQEN-QDCE/.github/blob/main/images/mcn.png" />
-</div>
 <!-- FIN ENTETE -->
 
-<!-- PROJET -->
-# Titre du projet 
+# Automatizaçao para a criaçao de projetos pessoais
 
-Faites une introduction au sujet du projet. Decrivez autant possible du contexte général de votre projet ou du sujet traité dans cette documentation. 
+L'automatisation de création de dépôts pour le Lab du CEAI.
 
-## Démarrage 
+## Prérequis
 
+D'abord, il faut avoir un système d'exploitation de type Unix (Linux, MacOS, BSD, etc), pour pouvoir exéecuter les scripts bash. Si vous travaillez dans Windows, vous pouvez déployer un conteineur qui exécute un système d'exploitation compatible; ou vous pouvez vous installer l'outil GitBash dans l'environnement Windows.  
 
-Ceci est un exemple de la façon dont vous pouvez donner des instructions sur la configuration de votre projet localement.
+Il fault avoir quelques outils installés sur le poste avant de lancer le script: `curl` pour faire lancer les requêtes REST, `jq` pour faire le parsing des JSON et `sed` pour faire l'édition de texte en temps réel dans le script. 
 
-Ces instructions vous permettront d'obtenir une copie du projet opérationnel sur votre machine locale à des fins de développement et de test. Voir la section `déploiement` pour des notes sur la façon de déployer le projet sur un système réel. 
+En plus, si vous allez créer des nouveaux fichiers à inclure dans le dépôt, il vous faudra un outil qui fait la codification des fichiers en Base64. On vous recommende d'utiliser `openssl` qui est disponible d'amblé dans la plupart des systèmes basés sur Unix.  
 
-
-### Pré-requis
-
-De quoi avez-vous besoin pour installer le logiciel et comment les installer. 
-
-Donnez des exemples. 
-
-* npm
-  ```sh
-  npm install npm@latest -g
-  ```
-
-
-### Installation
-
-Une série d'exemples étape par étape qui vous expliquent comment faire fonctionner un environnement de développement
-
-
-Décrivez chaque étapes
+Vérifiez s'ils sont installés, avec les commandes suivantes: 
 
 ```
-Donnez l'exemple
+$ curl --version
+$ jq --version
+$ sed --version
+$ openssl version
 ```
 
-Et répétez
+Si vous ne trouvez pas un des outils ci-dessus, faites l'installation des outils manquants
 
 ```
-jusqu'à la fin
+$ sudo apt-get install curl jq sed openssl 
 ```
 
-Terminez avec un exemple d'extraction de données du système ou de leur utilisation pour une petite démonstration. 
+Le script doit être lancé par les utilisateurs administrateurs du compte du CQEN dans Github. Seulement ces utilisateurs administrateurs auront les droits néecessaires pour la génération et l'écriture des nouveaux dépôts de code dans la plateforme. 
 
-1. Obtenez une clé API gratuite sur [https://example.com](https://example.com)
-2. Clonez le dépôt
+Pour vous identifier comme usager authentifié, vous devez créer un token d'accès personnel. Pour le faire, allez sur le site de github sur l'adresse [https://github.com/settings/apps](https://github.com/settings/apps), choissez `Personal access tokens` et cliquez sur le bouton `Generate new token`. Ensuite, selectionnez tous les scopes qui vous seront présentés et cliquez sur le bouton vert `Generate token` au bas de la page. Prenez note du token qui sera montré, car il ne sera plus possible de faire une nouvelle visualisation. 
 
-   ```sh
-   git clone https://github.com/CQEN-QDCE/nom-du-projet.git
-   ```
-
-3. Installez les packages NPM
-
-   ```sh
-   npm install
-   ```
-
-4. Entrez votre API dans `config.js`
-   ```JS
-   const API_KEY = 'ENTREZ VOTRE API';
-   ```
-
-
-## Exemple d'utilisation
-
-Montrez ce que le projet fait de manière aussi concise que possible, les développeurs devraient être en mesure de comprendre **comment** votre projet résout leur problème en regardant l'exemple de code. Assurez-vous que l'API que vous présentez est évidente et que votre code est court et concis.
-
-Utilisez cet espace pour montrer des exemples utiles d'utilisation d'un projet. Des captures d'écran supplémentaires, des exemples de code et des démos fonctionnent bien dans cet espace. Vous pouvez également créer un lien vers d'autres ressources.
-
-_Pour plus d'exemples, veuillez consulter la [Documentation](https://example.com)_
-
-## Référence d'API
-
-Selon la taille du projet, s'il est suffisamment petit et simple, les documents de référence peuvent être ajoutés au README. Pour les projets de taille moyenne à grande, il est important de fournir au moins un lien vers l'endroit où se trouvent les documents de référence de l'API.
-
-## Exécution des tests
-
-Expliquer comment exécuter les tests automatisés pour ce système
-
-### Décomposer en tests de bout en bout
-
-Expliquez ce que ces tests testent et pourquoi
+Dans votre ligne de commande, faites la création d'une variable d'environnement appelée `AUTH` avec le contenu du token généré
 
 ```
-Donnez un exemple
+$ export AUTH=<contenu du token>
 ```
 
-## Déploiement
+Si la variable d'environnement n'existe pas, vous aurez l'erreur suivante dans votre ligne de commande
 
-Ajoutez des notes supplémentaires sur la façon de déployer ceci sur un système en direct ou sur le cloud. 
-
-## Construit avec
-
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - Le framework web utilisé
-* [Maven](https://maven.apache.org/) - Gestion des dépendances
+<img src="./images/auth_error.png" />
 
 
-## Contribuez
+## Exécution du script
 
-Lisez s'il vous plaît [CONTRIBUTING.md](./CONTRIBUTING.md) pour plus de détails sur notre code de conduite et le processus de soumission des demandes d'extraction.
-
-Les contributions sont ce qui fait de la communauté open source un endroit incroyable pour apprendre, inspirer et créer. Toutes les contributions que vous faites sont ** grandement appréciées **.
-
-1. Fourchez le projet;
-2. Créez votre branche de fonctionnalité (`git checkout -b fonctionnalite/nouvelle-fonctionnalite`);
-3. Validez vos modifications (`git commit -m 'Ajouter nouvelle fonctionnalite'`);
-4. Appuyez sur la branche (`git push origin fonctionnalite/nouvelle-fonctionnalite`);
-5. Ouvrir une demande de `PR`.
+Faites le téléchargement de ce dépôt dans votre machine locale 
 
 
-## Gestion des versions
+```
+$ git clone https://github.com/CQEN-QDCE/AutomatisationREST.git
+$ cd AutomatisationREST
+```
 
-Nous utilisons [SemVer](https://semver.org/lang/fr/) pour la gestion des versions. 
+Ensuite, lancez le script avec la commande 
 
-Pour les versions disponibles, consultez les [tags sur ce repo](https://github.com/CQEN-QDCE/nom-du-projet/tags).
+```
+$ ./auto_creation.sh
+```
 
+Le script est iteractive, il vous posera quelques questions par rapport au dépôt que vous voulez créer. Veuillez répondre aux questions suivantes: 
 
-## Contributeurs 
+- **Nom du dépot:** Le nom du dépôt qui sera créé dans Github. Assurez-vous qu'il n'existe pas de dépôts avec ce même nom dans le Github du CQEN. 
+- **Description du dépôt:** Faites une description sommaire de ce dépôt et incluez l'OP resposable pour le projet.  
+- **Nom de l'équipe de travail de l'OP:** Donnez un nom distinctif à l'équipe qui travaillera dans ce projet. Ce nom d'équipe servira a donner les droits d'accès et écriture au projet, créeez une denomination claire. 
+Une suggestion de format serait la suivante: `OP_<abbregé du nom de l'OP>_<nom du projet>`. Par exemple, `OP_MCN_Blockchain`, pour une équipe de travail du CQEN qui travaillerait sur un projet nommé `Blockchain`.
+- **Description de cette équipe de travail:** Faites une description sommaire de cette équipe de travail et du projet qu'ils auront travailler.
+- **Nom d'usager github du mainteneur du dépôt de l'OP:** Indiquez le nom d'usager github de la personne qui sera le mainteneur du projet. Elle sera la personne de l'équipe qui gère les membres qui travaillent dans le projet et peut agir comme réviseur et approbateur des issues et des pull requests. 
+- **Votre nom d'usager github:** Indiquez ici votre nom d'usager github. Le token que vous avez crée doit appartenir à ce même compte d'usager.
+- **Votre email:** Le courriel lié à votre compte d'usager. Ces deux informations seront utilisés pour faire le sign-off des commits qui seront faits dans la création de fichiers default pour le dépôt. 
 
-Ce projet a été développé par l'équipe <nom de votre équipe>, du <nom de votre ministère>. 
+À la fin des questions, le script vous montrera toutes les informations recueillies et vous demandera de vérifier leur exactitude. 
 
-Vous pouvez contacter les personnes suivantes sur tout sujet lié à ce projet: 
+Si tout est beau, le script partira la génération du nouveau dépôt avec les informations fournies par vous. 
 
-1. Personne 1 <personne1@ministere.gouv.qc.ca>
-1. Personne 2 <personne2@ministere.gouv.qc.ca>
-1. Personne 3 <personne3@ministere.gouv.qc.ca>
+Si vous détectez des erreurs, répondez non à la confirmation et le script s'arretera. 
 
-Voir aussi la liste des [contributeurs](https://github.com/CQEN-QDCE/nom-du-projet/contributors) qui ont participé à ce projet.
+## Insertion de fichiers
 
-<!-- LICENSE -->
-## License
+Si vous voulez insérer des fichiers via un appel de la REST API, il faut codifier le fichier en format base64.
 
-Ce projet est sous la Licence Libre du Québec - Permissive (LiLiQ-P) version 1.1. 
+Pour le faire, il faut avoir installé sur la machine locale l'outil `openssl`. Référez-vous à la section des prérequis pour les détails.
 
-Référez-vous au fichier [LICENCE.md](LICENCE.md) pour plus de détails. 
+La conversion doit être faite sans l'inclusion de nouvelle ligne ou de `padding` au fichier de sortie. L'action par défault de openssl est de créér la sortie en lignes de 72 caractères, et faire un padding à la fin avec du space à blanc. Dans la commande de codification, on va rajouter la flag `-A` pour empêcher ce comportement du openssl. 
 
+Par exemple, pour codifier le fichier `exemple.txt` qui est dans le répertoire actuel, utilisez la commande suivante: 
 
-<!-- REMERCIEMENTS -->
-## Remerciements
-* Chapeau à toute personne dont le code a été utilisé
-* Inspiration
-* etc
+```bash
+$ openssl base64 -e -in exemple.txt -A > exemple.b64 
+```
 
-* [GitHub Emoji Cheat Sheet](https://www.webpagefx.com/tools/emoji-cheat-sheet)
-* [Img Shields](https://shields.io)
-* [Choose an Open Source License](https://choosealicense.com)
-* [GitHub Pages](https://pages.github.com)
-* [Animate.css](https://daneden.github.io/animate.css)
-* [Loaders.css](https://connoratherton.com/loaders)
-* [Slick Carousel](https://kenwheeler.github.io/slick)
-* [Smooth Scroll](https://github.com/cferdinandi/smooth-scroll)
-* [Sticky Kit](http://leafo.net/sticky-kit)
-* [JVectorMap](http://jvectormap.com)
-* [Font Awesome](https://fontawesome.com)
-
-
-
-
-
-# Références 
-
-[Licence Libre du Québec](https://forge.gouv.qc.ca/licence/)
-
-[Standard for Public Code (en)](https://standard.publiccode.net/)
-
-[Guide d'opensource](https://opensource.guide/fr/)
-
-[Comment contribuer a l'opensource](https://opensource.guide/fr/how-to-contribute/)
-
-
-
-
-<!-- MARKDOWN LINKS & IMAGES -->
-<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-
-[demarche-url]: https://www.quebec.ca/gouv/politiques-orientations/vitrine-numeriqc/accompagnement-des-organismes-publics/demarche-conception-services-numeriques
-[demarche-shield]: https://img.shields.io/badge/Lifecycle-Experimental-339999
-[license-LiLiQ-url]: ././LICENCE.md
-[license-LiLiQ-shield]: https://img.shields.io/badge/Licence-LiLiQ--R-blue
+Ensuite, déposez le fichier converti dans le répertoire `./doc` et l'utilisez dans le script `04-fichiers-creation.sh`

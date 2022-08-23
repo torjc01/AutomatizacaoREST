@@ -1,0 +1,5 @@
+1 - Signer et sign-off les commits 
+2 - Suppresion de l'image du MCN
+3 - Régenerer les base64 des fichiers avec les bons headers
+4 - Escolher o modelo DEV/PROD DEV/PRE-PROD/PROD dans les options
+5 - Changer le nom d'usager mainteneur default par cqen-innovation

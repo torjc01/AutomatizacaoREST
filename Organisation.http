@@ -1,0 +1,233 @@
+#/*
+#* SPDX-License-Identifier: LiLiQ-R-v.1.1
+#* License-Filename: /LICENSE
+#*/
+###############################################################
+#  API Github poru creation automatisee et standard de depots
+###############################################################
+### Définition des variables globales
+@depot = "teste-github"
+
+####
+#### Github - liste les endpoints disponibles 
+#### 
+GET {{hostname}} HTTP/1.1
+Accept: application/vnd.github+json
+Authorization: token {{auth}}
+Content-Type: application/json
+
+####
+#### Github Zen - meta endpoint de teste
+#### 
+GET {{hostname}}/zen HTTP/1.1
+Accept: application/vnd.github+json
+Authorization: token {{auth}}
+Content-Type: application/json
+
+####
+#### Liste de dépôts publiques de l'org
+#### 
+# @prompt orgname Le nom de votre organisation
+GET {{hostname}}/orgs/{{{{org}}}}/repos HTTP/1.1
+Accept: application/vnd.github+json
+Authorization: token {{auth}}
+Content-Type: application/json
+
+####
+#### Liste l'usager autentifié
+#### 
+# @prompt username Le nom de l'usager
+GET {{hostname}}/user HTTP/1.1
+Accept: application/vnd.github+json
+Authorization: token {{auth}}
+Content-Type: application/json
+
+####
+#### Liste un usager
+#### 
+# @prompt nom Le nom de l'usager
+GET {{hostname}}/users/{{nom}} HTTP/1.1
+Accept: application/vnd.github+json
+Authorization: token {{auth}}
+Content-Type: application/json
+
+
+####
+#### Liste publique  
+#### 
+GET {{hostname}}/users/{{username}}/repos HTTP/1.1
+Accept: application/vnd.github+json
+Authorization: token {{auth}}
+Content-Type: application/json
+
+####
+#### Créér un dépôt d'organisation
+#### 
+# @prompt depot Nom du dépôt à créer 
+# @prompt description Saisissez la description du projet
+POST {{hostname}}/orgs/{{org}}/repos   HTTP/1.1
+Accept: application/vnd.github+json
+Authorization: token {{auth}} 
+Content-Type: application/json
+
+{
+  "org": "{{org}}",
+  "name": "{{depot}}",
+  "description": "{{description}}",
+  "homepage": "https://github.com/{{org}}/{{depot}}",
+  "private": true,
+  "has_issues": true,
+  "has_projects": true,
+  "has_wiki": true, 
+  "gitignore_template": "Node",    // Faire attention, c'est case-sensitive
+  "license_template": "mit", 
+  "allow_squash_merge": true, 
+  "allow_merge_commit": true, 
+  "allow_rebase_merge": true, 
+  "delete_branch_on_merge": false, 
+  "use_squash_pr_title_as_default": false
+}
+
+####
+#### Récuperer les donnés de la branche main
+####
+
+GET {{hostname}}/repos/{{org}}/{{depot}}/branches/master
+Accept: application/vnd.github+json
+Authorization: token {{auth}} 
+Content-Type: application/json
+
+{
+	"owner": "{{org}}",
+  	"repo": "{{depot}}",
+  	"branch": "main"
+}
+
+####
+#### Créér l'environnement de dev
+####
+PUT {{hostname}}/repos/{{org}}/environments/dev
+Accept: application/vnd.github+json
+Authorization: token {{auth}} 
+Content-Type: application/json
+
+{
+	"owner": "{{org}}",
+  "repo": "{{depot}}",
+  "branch": "dev"
+}
+
+
+####
+#### Créér l'environnement de prod 
+####
+PUT {{hostname}}/repos/{{org}}/environments/prod
+Accept: application/vnd.github+json
+Authorization: token {{auth}} 
+Content-Type: application/json
+
+{
+	"owner": "{{org}}",
+  "repo": "{{depot}}",
+  "branch": "prod"
+}
+
+####
+#### Créér la branche dev 
+####
+# @prompt shaOrigine SHA de la branche d'origine (main) 
+
+POST {{hostname}}/repos/{{org}}/{{depot}}/git/refs HTTP/1.1
+Accept: application/vnd.github+json
+Authorization: token {{auth}} 
+Content-Type: application/json
+
+{
+  "ref": "refs/heads/dev",
+  //"sha": "{{shaOrigine}}"
+  "sha": "{{shaOrigine}}"
+}
+
+####
+#### Créér la branche prod 
+####
+# @prompt shaOrigine SHA de la branche d'origine (main) 
+
+POST {{hostname}}/repos/{{org}}/{{depot}}/git/refs HTTP/1.1
+Accept: application/vnd.github+json
+Authorization: token {{auth}} 
+Content-Type: application/json
+
+{
+  "ref": "refs/heads/prod",
+  "sha": "872f5bc2fb52625f505459a6d34a351c734d4121"
+}
+
+
+####
+#### Récupère team par son nom
+####
+# @prompt nomTeam Nom du team cherché 
+
+GET {{hostname}}/orgs/{{org}}/teams/{{nomTeam}}
+Accept: application/vnd.github+json
+Authorization: token {{auth}} 
+Content-Type: application/json
+
+####
+#### Envoyer les invitations aux membres de l'équipe 
+#### 
+# @prompt membername Le code usager github du membre à inviter
+# @prompt team_slug  Le nom de l'équipe laquelle le membre va rejoindre
+
+PUT /orgs/{{org}}/teams/{{team_slug}}/memberships/{{membername}}
+Accept: application/vnd.github+json
+Authorization: token {{auth}} 
+Content-Type: application/json
+
+{
+  "org": "{{org}}",
+  "team_slug": "{{team_slug}}",
+  "username": "{{membername}}",
+  "role": "maintainer"
+}
+
+
+####
+#### Créér fichiers dans un repo 
+#### 
+PUT {{hostname}}/repos/{{org}}/{{depot}}/contents/README.md   HTTP/1.1
+Accept: application/vnd.github+json
+Authorization: token {{auth}}
+Content-Type: application/json
+
+{
+  "owner": "{{org}}",
+  "repo": "{{depot}}",
+  "path": "./README.md",
+  "message": "Création automatisée du fichier README.md",
+  "committer": {
+    "name": "{{username}}",
+    "email": "{{email}}"
+  },
+  "content": "bXkgbmV3IGZpbGUgY29udGVudHM="
+}
+
+####
+#### Récuperer le README
+#### 
+GET {{hostname}}/repos/CQEN-QDCE/{{depot}}/README.md   HTTP/1.1
+Accept: application/vnd.github+json
+Authorization: token {{auth}}
+Content-Type: application/json
+
+
+
+####
+#### Récuperer contenu raw prive / publique 
+#### 
+GET https://raw.githubusercontent.com/CQEN-QDCE/AutomatisationREST/prod/README.md HTTP/1.1
+Accept: application/vnd.github+json
+Authorization: token {{auth}}
+Content-Type: application/json
+

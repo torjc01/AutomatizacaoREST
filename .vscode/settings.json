@@ -1,0 +1,16 @@
+{
+    "rest-client.environmentVariables": {
+        "local": {
+            "hostname": "https://api.github.com",
+            "username": "torjc01",
+            "email": "julio.cesartorres@mcn.gouv.qc.ca",
+            "auth" :   ""
+        },
+        "production": {
+            "hostname": "https://api.github.com",
+            "username": "torjc01",
+            "email": "julio.cesartorres@mcn.gouv.qc.ca",
+            "auth" :   ""
+        }
+    }
+}

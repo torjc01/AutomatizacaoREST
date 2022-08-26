@@ -12,7 +12,8 @@ set -e
 set -vx
 source ./couleurs.sh 
 
-DEPOT=$1
+DEPOT=$1 
+PROFILE=$2
 
 # D'abord, il faut chercher la valeur de la branche main. 
 
@@ -39,16 +40,19 @@ curl \
     \"sha\" : \"$SHA\" 
   }"
 
-echo ${GREEN}"    Creation de la branche PRE-PROD"${RESET}
-curl \
-  -X POST \
-  -H "Accept: application/vnd.github+json" \
-  -H "Authorization: token $AUTH" \
-  https://api.github.com/repos/torjc01/${DEPOT}/git/refs \
-  -d "{
-    \"ref\": \"refs/heads/pre-prod\",
-    \"sha\" : \"$SHA\" 
-  }"
+if [ $PROFILE -eq 2 ]
+then
+  echo ${GREEN}"    Creation de la branche PRE-PROD"${RESET}
+  curl \
+    -X POST \
+    -H "Accept: application/vnd.github+json" \
+    -H "Authorization: token $AUTH" \
+    https://api.github.com/repos/torjc01/${DEPOT}/git/refs \
+    -d "{
+      \"ref\": \"refs/heads/pre-prod\",
+      \"sha\" : \"$SHA\" 
+    }"
+fi
 
 echo ${GREEN}"    Creation de la branche PROD"${RESET}
 curl \

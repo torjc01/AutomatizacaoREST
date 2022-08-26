@@ -154,7 +154,7 @@ echo " "
 echo ${MAGENTA}"PROTECTION DES BRANCHES"${RESET}
 echo " "
 
-./06-branches-protection.sh "$DEPOT"
+./06-branches-protection.sh "$DEPOT" "$PROFILE"
 
 
 echo " "

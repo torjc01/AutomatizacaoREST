@@ -13,6 +13,7 @@ set -e
 source ./couleurs.sh 
 
 DEPOT=$1
+PROFILE=$2
 
 #Protection de la branche prod
 
@@ -48,41 +49,43 @@ curl \
   https://api.github.com/repos/torjc01/${DEPOT}/branches/prod/protection/required_signatures
 
 
+if [ $PROFILE -eq 2 ]
+then
+    #Protection de la branche pre-prod
 
-#Protection de la branche pre-prod
+    echo ${GREEN}"Protection de la branche pre-prod"${RESET}
+    curl \
+    -X PUT \
+    -H "Accept: application/vnd.github+json" \
+    -H "Authorization: token $AUTH" \
+    https://api.github.com/repos/torjc01/${DEPOT}/branches/pre-prod/protection \
+    -d '{
+            "required_status_checks": null,
+            "enforce_admins": true,
+            "required_pull_request_reviews" : 
+                {
+                    "dismiss_stale_reviews": false,
+                    "require_code_owner_reviews": true,
+                    "required_approving_review_count": 1
+                },
+            "restrictions":null, 
+            "required_conversation_resolution": true
+        }' 
 
-echo ${GREEN}"Protection de la branche pre-prod"${RESET}
-curl \
-  -X PUT \
-  -H "Accept: application/vnd.github+json" \
-  -H "Authorization: token $AUTH" \
-  https://api.github.com/repos/torjc01/${DEPOT}/branches/pre-prod/protection \
-  -d '{
-        "required_status_checks": null,
-        "enforce_admins": true,
-        "required_pull_request_reviews" : 
-            {
-                "dismiss_stale_reviews": false,
-                "require_code_owner_reviews": true,
-                "required_approving_review_count": 1
-            },
-        "restrictions":null, 
-        "required_conversation_resolution": true
-    }' 
+    # Require signed commits 
+    # post/repos/{owner}/{repo}/branches/{branch}/protection/required_signatures
+    # https://docs.github.com/en/rest/branches/branch-protection#create-commit-signature-protection
 
-# Require signed commits 
-# post/repos/{owner}/{repo}/branches/{branch}/protection/required_signatures
-# https://docs.github.com/en/rest/branches/branch-protection#create-commit-signature-protection
+    echo ${GREEN}"Protection de la branche pre-prod: {owner}require signed commits"${RESET}
+    curl \
+    -X POST \
+    -H "Accept: application/vnd.github+json" \
+    -H "Content-type: application/json" \
+    -H "Authorization: token $AUTH" \
+    https://api.github.com/repos/torjc01/${DEPOT}/branches/pre-prod/protection/required_signatures
 
-echo ${GREEN}"Protection de la branche pre-prod: {owner}require signed commits"${RESET}
-curl \
-  -X POST \
-  -H "Accept: application/vnd.github+json" \
-  -H "Content-type: application/json" \
-  -H "Authorization: token $AUTH" \
-  https://api.github.com/repos/torjc01/${DEPOT}/branches/pre-prod/protection/required_signatures
-
-
+    #
+fi
 
 #Protection de la branche dev
 

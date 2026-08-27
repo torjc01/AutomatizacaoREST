@@ -16,7 +16,7 @@ DEPOT=$1
 PROFILE=$2
 OWNER=$3
 
-#Protection de la branche prod
+#Protection de la branche prod, supprimé le pararmetre "required_approving_review_count": 1 de required_status_checks, car il n'y a pas de reviewers dans le contexte de ce dépôt.
 
 echo ${GREEN}"Protection de la branche prod"${RESET}
 curl \
@@ -30,8 +30,7 @@ curl \
         "required_pull_request_reviews" : 
             {
                 "dismiss_stale_reviews": false,
-                "require_code_owner_reviews": true,
-                "required_approving_review_count": 1
+                "require_code_owner_reviews": true
             },
         "restrictions":null, 
         "required_conversation_resolution": true
@@ -52,7 +51,7 @@ curl \
 
 if [ $PROFILE -eq 2 ]
 then
-    #Protection de la branche pre-prod
+    #Protection de la branche pre-prod, supprimé le pararmetre "required_approving_review_count": 1 de required_status_checks, car il n'y a pas de reviewers dans le contexte de ce dépôt.
 
     echo ${GREEN}"Protection de la branche pre-prod"${RESET}
     curl \
@@ -66,8 +65,7 @@ then
             "required_pull_request_reviews" : 
                 {
                     "dismiss_stale_reviews": false,
-                    "require_code_owner_reviews": true,
-                    "required_approving_review_count": 1
+                    "require_code_owner_reviews": true
                 },
             "restrictions":null, 
             "required_conversation_resolution": true

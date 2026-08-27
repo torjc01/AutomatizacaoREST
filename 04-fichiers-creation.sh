@@ -20,6 +20,7 @@ source ./couleurs.sh
 DEPOT=$1
 USERNAME=$2
 EMAIL=$3
+OWNER=$4
 
 GH_USER=$(git config user.name)
 GH_EMAIL=$(git config user.email)
@@ -29,7 +30,7 @@ SHA=$(curl -X GET  \
 -H "Accept: application/vnd.github+json" \
 -H "Content-Type:application/json" \
 -H "Authorization: token $AUTH"  \
-https://api.github.com/repos/CQEN-QDCE/${DEPOT}/contents/README.md | jq '.sha'| sed 's/\"//g')
+https://api.github.com/repos/${OWNER}/${DEPOT}/contents/README.md | jq '.sha'| sed 's/\"//g')
 
 
 echo "SHA du fichier README: " $SHA
@@ -41,7 +42,7 @@ curl -X PUT  \
 -H "Accept: application/vnd.github+json" \
 -H "Content-Type:application/json" \
 -H "Authorization: token $AUTH"  \
-https://api.github.com/repos/CQEN-QDCE/${DEPOT}/contents/README.md \
+https://api.github.com/repos/${OWNER}/${DEPOT}/contents/README.md \
 -d  "{
         \"message\": \"Création automatisée du fichier README.md \nSigned-off-by: $GH_USER <$GH_EMAIL>\",
         \"sha\": \"$SHA\",
@@ -56,6 +57,49 @@ https://api.github.com/repos/CQEN-QDCE/${DEPOT}/contents/README.md \
         \"content\": \"$(cat ./docs/README.b64)\"
     }" 
 
+# Insertion du fichier .gitignore
+
+echo ${GREEN}"Inserer le nouveau .gitignore"${RESET}
+curl -X PUT  \
+-H "Accept: application/vnd.github+json" \
+-H "Content-Type:application/json" \
+-H "Authorization: token $AUTH"  \
+https://api.github.com/repos/${OWNER}/${DEPOT}/contents/.gitignore \
+-d  "{
+        \"message\": \"Création automatisée du fichier .gitignore \nSigned-off-by: $GH_USER <$GH_EMAIL>\",
+        \"sha\": \"$SHA\",
+        \"author\": {
+            \"name\": \"${USERNAME}\",
+            \"email\": \"${EMAIL}\"
+        },
+        \"committer\": {
+            \"name\": \"${USERNAME}\",
+            \"email\": \"${EMAIL}\"
+        },
+        \"content\": \"$(cat ./docs/gitignore.b64)\"
+    }" 
+
+# Insertion du fichier .gitignore
+
+echo ${GREEN}"Inserer l'image du logo"${RESET}
+curl -X PUT  \
+-H "Accept: application/vnd.github+json" \
+-H "Content-Type:application/json" \
+-H "Authorization: token $AUTH"  \
+https://api.github.com/repos/${OWNER}/${DEPOT}/contents/images/RegimentalEthosBanner.png \
+-d  "{
+        \"message\": \"Création automatisée du fichier RegimentalEthosBanner.png \nSigned-off-by: $GH_USER <$GH_EMAIL>\",
+        \"sha\": \"$SHA\",
+        \"author\": {
+            \"name\": \"${USERNAME}\",
+            \"email\": \"${EMAIL}\"
+        },
+        \"committer\": {
+            \"name\": \"${USERNAME}\",
+            \"email\": \"${EMAIL}\"
+        },
+        \"content\": \"$(cat ./docs/RegimentalEthosBanner.png.b64)\"
+    }" 
 
 # Insertion de la licence 
 echo ${GREEN}"Inserer la LICENCE"${RESET}
@@ -64,7 +108,7 @@ curl -X PUT  \
 -H "Accept: application/vnd.github+json" \
 -H "Content-Type:application/json" \
 -H "Authorization: token $AUTH"  \
-https://api.github.com/repos/CQEN-QDCE/${DEPOT}/contents/LICENCE.md \
+https://api.github.com/repos/${OWNER}/${DEPOT}/contents/LICENCE.md \
 -d  "{
         \"message\": \"Création automatisée du fichier LICENCE.md \nSigned-off-by: $GH_USER <$GH_EMAIL>\",
         \"author\": {
@@ -85,7 +129,7 @@ curl -X PUT  \
 -H "Accept: application/vnd.github+json" \
 -H "Content-Type:application/json" \
 -H "Authorization: token $AUTH"  \
-https://api.github.com/repos/CQEN-QDCE/${DEPOT}/contents/.github/CODEOWNERS \
+https://api.github.com/repos/${OWNER}/${DEPOT}/contents/.github/CODEOWNERS \
 -d  "{
         \"message\": \"Création automatisée du fichier CODEOWNERS. \nSigned-off-by: $GH_USER <$GH_EMAIL>\",
         \"author\": {

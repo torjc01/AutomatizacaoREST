@@ -14,23 +14,23 @@ source ./couleurs.sh
 
 DEPOT=$1
 PROFILE=$2
+OWNER=$3
 
-#Protection de la branche prod
+#Protection de la branche prod, supprimé le pararmetre "required_approving_review_count": 1 de required_status_checks, car il n'y a pas de reviewers dans le contexte de ce dépôt.
 
 echo ${GREEN}"Protection de la branche prod"${RESET}
 curl \
   -X PUT \
   -H "Accept: application/vnd.github+json" \
   -H "Authorization: token $AUTH" \
-  https://api.github.com/repos/torjc01/${DEPOT}/branches/prod/protection \
+  https://api.github.com/repos/${OWNER}/${DEPOT}/branches/prod/protection \
   -d '{
         "required_status_checks": null,
         "enforce_admins": true,
         "required_pull_request_reviews" : 
             {
                 "dismiss_stale_reviews": false,
-                "require_code_owner_reviews": true,
-                "required_approving_review_count": 1
+                "require_code_owner_reviews": true
             },
         "restrictions":null, 
         "required_conversation_resolution": true
@@ -46,27 +46,26 @@ curl \
   -H "Accept: application/vnd.github+json" \
   -H "Content-type: application/json" \
   -H "Authorization: token $AUTH" \
-  https://api.github.com/repos/torjc01/${DEPOT}/branches/prod/protection/required_signatures
+  https://api.github.com/repos/${OWNER}/${DEPOT}/branches/prod/protection/required_signatures
 
 
 if [ $PROFILE -eq 2 ]
 then
-    #Protection de la branche pre-prod
+    #Protection de la branche pre-prod, supprimé le pararmetre "required_approving_review_count": 1 de required_status_checks, car il n'y a pas de reviewers dans le contexte de ce dépôt.
 
     echo ${GREEN}"Protection de la branche pre-prod"${RESET}
     curl \
     -X PUT \
     -H "Accept: application/vnd.github+json" \
     -H "Authorization: token $AUTH" \
-    https://api.github.com/repos/torjc01/${DEPOT}/branches/pre-prod/protection \
+    https://api.github.com/repos/${OWNER}/${DEPOT}/branches/pre-prod/protection \
     -d '{
             "required_status_checks": null,
             "enforce_admins": true,
             "required_pull_request_reviews" : 
                 {
                     "dismiss_stale_reviews": false,
-                    "require_code_owner_reviews": true,
-                    "required_approving_review_count": 1
+                    "require_code_owner_reviews": true
                 },
             "restrictions":null, 
             "required_conversation_resolution": true
@@ -82,7 +81,7 @@ then
     -H "Accept: application/vnd.github+json" \
     -H "Content-type: application/json" \
     -H "Authorization: token $AUTH" \
-    https://api.github.com/repos/torjc01/${DEPOT}/branches/pre-prod/protection/required_signatures
+    https://api.github.com/repos/${OWNER}/${DEPOT}/branches/pre-prod/protection/required_signatures
 
     #
 fi
@@ -94,7 +93,7 @@ curl \
   -X PUT \
   -H "Accept: application/vnd.github+json" \
   -H "Authorization: token $AUTH" \
-  https://api.github.com/repos/torjc01/${DEPOT}/branches/dev/protection \
+  https://api.github.com/repos/${OWNER}/${DEPOT}/branches/dev/protection \
   -d '{
         "required_status_checks": null,
         "enforce_admins": true,
@@ -117,4 +116,4 @@ curl \
   -H "Accept: application/vnd.github+json" \
   -H "Content-type: application/json" \
   -H "Authorization: token $AUTH" \
-  https://api.github.com/repos/torjc01/${DEPOT}/branches/dev/protection/required_signatures
+  https://api.github.com/repos/${OWNER}/${DEPOT}/branches/dev/protection/required_signatures

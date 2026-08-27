@@ -12,6 +12,7 @@ set -e
 source ./couleurs.sh 
 
 DEPOT=$1
+OWNER=$2
 
 # Supprime la branche main, qui ne sera pas utilisée dans le contexte de ce dépôt
 echo "Suppression de la branche main"
@@ -20,4 +21,4 @@ curl \
   -s -X DELETE \
   -H "Accept: application/vnd.github+json" \
   -H "Authorization: token $AUTH" \
-  https://api.github.com/repos/CQEN-QDCE/$DEPOT/git/refs/heads/main
+  https://api.github.com/repos/$OWNER/$DEPOT/git/refs/heads/main

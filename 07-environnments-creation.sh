@@ -14,6 +14,8 @@ source ./couleurs.sh
 # Environnements 
 
 DEPOT=$1
+PROFILE=$2
+OWNER=$3
 
 # Creation de l'environnement de dev
 echo ${GREEN}"Création de l'environnement de dev"${RESET}
@@ -23,7 +25,7 @@ curl \
 -H "Accept: application/vnd.github+json" \
 -H "Authorization: token $AUTH" \
 -H "Content-Type: application/json" \
--i "https://api.github.com/repos/torjc01/${DEPOT}/environments/dev" \
+-i "https://api.github.com/repos/${OWNER}/${DEPOT}/environments/dev" \
 -d '{
         "wait_timer": 0,
         "reviewers": [
@@ -35,25 +37,28 @@ curl \
         
     }'
 
-# Creation de l'environnement de pre-prod
-echo ${GREEN}"Création de l'environnement de pre-prod"${RESET}
+if [ $PROFILE == "2" ]; then
+        # Creation de l'environnement de pre-prod
+        echo ${GREEN}"Création de l'environnement de pre-prod"${RESET}
 
-curl \
--X PUT \
--H "Accept: application/vnd.github+json" \
--H "Authorization: token $AUTH" \
--H "Content-Type: application/json" \
--i "https://api.github.com/repos/torjc01/${DEPOT}/environments/pre-prod" \
--d '{
-        "wait_timer": 0,
-        "reviewers": [
-            
-        ], 
-        "deployment_branch_policy": 
-            {"protected_branches": false, 
-            "custom_branch_policies": true}
-        
-    }'
+        curl \
+        -X PUT \
+        -H "Accept: application/vnd.github+json" \
+        -H "Authorization: token $AUTH" \
+        -H "Content-Type: application/json" \
+        -i "https://api.github.com/repos/${OWNER}/${DEPOT}/environments/pre-prod" \
+        -d '{
+                "wait_timer": 0,
+                "reviewers": [
+                
+                ], 
+                "deployment_branch_policy": 
+                {"protected_branches": false, 
+                "custom_branch_policies": true}
+                
+        }'
+fi 
+
 
 # Creation de l'environnement de prod
 echo ${GREEN}"Création de l'environnement de prod"${RESET}
@@ -63,7 +68,7 @@ curl \
 -H "Accept: application/vnd.github+json" \
 -H "Authorization: token $AUTH" \
 -H "Content-Type: application/json" \
--i "https://api.github.com/repos/torjc01/${DEPOT}/environments/prod" \
+-i "https://api.github.com/repos/${OWNER}/${DEPOT}/environments/prod" \
 -d '{
         "wait_timer": 0,
         "reviewers": [

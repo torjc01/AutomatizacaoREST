@@ -19,13 +19,15 @@ source ./couleurs.sh
 # == Infos sur l'organisation
 HOSTNAME=https://api.github.com
 GITHUB=https://www.github.com
+ORG=CQEN-QDCE
+CEAI_CQEN_ID="4838586"
 
 # #######################################################################################
 
 # Validation de la presence de la clé github
 if [ -z $AUTH ]; then 
     echo ${RED}"*************************************************************"
-    echo "ERREUR: Token d'autentication personnel de GitHub non créé."
+    echo "ERRO: Token d'autentication personnel de GitHub non créé."
     echo "Dans votre cli, executez la commande "
     echo "    export AUTH=<votre token personnelle>"
     echo "Le script va quitter avec code d'erreur 100"
@@ -35,98 +37,160 @@ if [ -z $AUTH ]; then
 fi
 
 echo " "
-echo ${GREEN}"BIENVENU À LA CRÉATION AUTOMATISÉE DE DÉPÔT GITHUB DU CQEN." ${RESET}
+echo ${GREEN}"BEM-VINDO À CRIAÇÃO AUTOMATIZADA DE REPOSITÓRIOS GITHUB." ${RESET}
 echo ""
 
-# ==== Demande de l'info à l'utilisateur. 
-echo ${MAGENTA}"Veuillez informer les paramètres qui suivent.... "
+# ==== Demanda de informações ao usuário.
+echo ${MAGENTA}"Por favor informe os parâmetros que seguem.... "${RESET}
 echo " "
 
-echo ${YELLOW}"INFORMATIONS SUR LE DEPOT"${RESET}
+echo ${YELLOW}"INFORMAÇÕES SOBRE O REPOSITÓRIO"${RESET}
 # Nom du dépôt 
-read -e -i "$depot" -p ${GREEN}"Nom du dépôt : "${RESET} INPUT 
-DEPOT="${INPUT:-depot}"
-
-# Description
-read -e -i "$desc" -p ${GREEN}"Description du dépôt (optionnel): "${RESET} INPUT
-DESC="${INPUT:-$desc}"
+echo -n ${GREEN}"Nome do repositório : "${RESET}
+read DEPOT
 echo " "
 
-echo ${YELLOW}"INFORMATIONS SUR LE FLUX DE TRAVAIL"${RESET}
-# Choix du flux de travail 
-read -e -i "$profile" -p ${GREEN}"Saisssez 1 pour DEV->PROD, ou 2 pour DEV->PRE-PROD->PROD: "${RESET} INPUT
-PROFILE="${INPUT:-$profile}"
+# Descrição do repositório
+echo -n ${GREEN}"Descrição do repositório (opcional) : "${RESET}
+read DESC
+echo " "
+
+echo -n ${GREEN}"Owner do repositório: "
+echo "Escolha uma das opcoes numericas abaixo:"
+echo "1 - torjc01"
+echo "2 - RegimentalEthos"${RESET}
+read OWNER
+echo " " 
+
+[[ -z "$OWNER" ]] &&
+ OWNER=1
+
+case $OWNER in 
+    1)
+        echo "Owner do repositório : torjc01"
+        OWNER=torjc01
+        ORG=false
+        ;;
+    2)
+        echo "Owner do repositório : RegimentalEthos"
+        OWNER=RegimentalEthos
+        ORG=true
+        ;;
+    *)
+        echo "ERRO: Owner do repositório inválido."
+        echo "Default owner: torjc01"
+        sleep 1
+        OWNER=torjc01
+        ORG=false
+        ;;
+esac
+
+# Visibilidade do repositório
+echo -n ${GREEN}"Visibilidade do repositório (público/privado) : "${RESET}
+echo "Escolha uma das opcoes numericas abaixo:"
+echo "1 - publico"
+echo "2 - privado"
+
+read VISIB
+[[ -z "$VISIB" ]] &&
+ VISIB=1
+
+echo " "
+
+case $VISIB in 
+    1) 
+        echo "Visibilidade: público" 
+        VISIB=false
+        ;;
+    2) 
+        echo "Visibilidade: privado"
+        VISIB=true
+        ;;
+    *) 
+        echo ${YELLOW}"Opcao de visibilidade inválida." 
+        echo "Atribuindo visibilidade default: público"${RESET}
+        VISIB=false
+        ;;
+esac
+echo " " 
+
+echo ${YELLOW}"INFORMACOES SOBRE O FLUXO DE TRABALHO"${RESET}
+# Escolha de fluxo de trabalho
+echo -n ${GREEN}"Digite 1 para DEV->PROD, ou 2 para DEV->PRE-PROD->PROD : "${RESET}
+read PROFILE
+
 
 [[ -z "$PROFILE" ]] &&
  PROFILE=1 
 
 case $PROFILE in 
     1)
-        echo "Simples"
+        echo "DEV->PROD"
         ;;
     2)
-        echo "Longo"
+        echo "DEV->PRE-PROD->PROD"
         ;;
     *)
-        echo "ERREUR: Option invalide."
-        echo "Defaulting à la version simple"
+        echo ${YELLOW}"Opcao de profile inválida."
+        echo "Atribuindo provile default 1:DEV->PROD"${RESET}
+        sleep 1
         PROFILE=1
         ;;
 esac
-echo "PROFILE: " $PROFILE
+echo " " 
+echo ${YELLOW}"INFORMACAO SOBRE VOCÊ (SYSADMIN)"${RESET}
 
-echo ${YELLOW}"INFORMATION SUR VOUS (SYSADMIN)"${RESET}
-# Nom usager github du admin de systemes
-read -e -i "$username" -p ${GREEN}"Votre nom d'usager github : "${RESET} INPUT
-USERNAME="${INPUT:-$username}"
-
-# Email du admin de systemes
-read -e -i "$email" -p ${GREEN}"Votre email : "${RESET} INPUT
-EMAIL="${INPUT:-$email}"
+# Recuperation des valeurs par la config de git 
+USERNAME=$(git config user.name)
+EMAIL=$(git config user.email)
 
 # ==== Validation des informations fournies 
 echo ""
-echo "Voici les données saisies. Vérifiez si elles sont exactes: "
+echo "Aqui estão os dados digitados. Verifique se as informações são exatas: "
 echo ${YELLOW}"DEPOT"${RESET}
-echo "Nom du projet      : "${RED}$DEPOT ${RESET}
-echo "Description projet : "${RED}$DESC ${RESET}
-echo ${YELLOW}"EQUIPE DE TRAVAIL"${RESET}
-echo "Nom equipe travail : "${RED}$NOM_EQUIPE ${RESET}
-echo "Desc equipe travail: "${RED}$DESCTEAM ${RESET}
-echo "Mainteneur         : "${RED}$MAINTENEUR ${RESET}
-echo ${YELLOW}"VOUS - LE SYSADMIN"${RESET}
-echo "Votre nom d'usager : "${RED}$USERNAME ${RESET}
-echo "Votre courriel     : "${RED}$EMAIL ${RESET}
-
-# echo "Votre auth token   : "${RED}$AUTH ${RESET}
+echo "Nome do projeto             : "${RED}$DEPOT ${RESET}
+echo "Descrição do projeto        : "${RED}$DESC ${RESET}
+echo "Visibilidade: é privado?    : "${RED}$VISIB ${RESET}
+echo "Owner do projeto            : "${RED}$OWNER ${RESET}
+echo "É organização?              : "${RED}$ORG ${RESET}
+echo ${YELLOW}"FLUXO DE TRABALHO    "${RESET}
+tmp=$([[ $PROFILE -eq 1 ]] && echo "DEV->PROD" || echo "DEV->PRE-PROD->PROD")
+echo "Tipo de fluxo trabalho      : "${RED}$PROFILE":"$tmp ${RESET}  
+echo ${YELLOW}"VOCE - O SYSADMIN" ${RESET}
+echo "Seu nome                    : "${RED}$USERNAME ${RESET}
+echo "Seu email                   : "${RED}$EMAIL ${RESET}
 echo ""
-echo "Tous les données sont correctes? (O/N)"
-read CONFIRMATION 
+echo "Todos os dados estao corretos? (S/N)"
+read CONF
 echo ""
 
 
-case $CONFIRMATION in 
+case $CONF in 
 
-    O | o)
-        echo "Données confirmées."
+    S|s)
+        echo "Dados confirmados."
         ;;
-    N | n)
+    N|n)
         echo ${RED}"******************************************"
-        echo "ERREUR: Données non confirmées."
-        echo "Le script va quitter avec code d'erreur 1"
-        echo "Merci de redémarrer le script"
+        echo "ERRO: Dados nao confirmados."
+        echo "O script vai sair com codigo de erro 1"
+        echo "Por favor, execute o script de novo"
         echo "******************************************"${RESET}
         exit 1
         ;;
     *)
-         ${RED}"******************************************"
-        echo "ERREUR: Option invalide."
-        echo "Le script va quitter avec code d'erreur 2"
-        echo "Merci de redémarrer le script"
-        "******************************************"${RESET}
+        echo ${RED}"******************************************"
+        echo "ERRO: Opcao invalida."
+        echo "O script vai sair com codigo de erro 1"
+        echo "Por favor, execute o script de novo"
+        echo "******************************************"${RESET}
         exit 2
         ;;
 esac
+
+# ####################################################################################
+#   ETAPA 2 - EXECUÇÃO DOS SCRIPTS DE CRIAÇÃO DE REPOSITÓRIOS
+# ####################################################################################
 
 
 echo " "
@@ -134,38 +198,52 @@ echo ${MAGENTA}"CREATION DU DÉPÔT"${RESET}
 echo " "
 
 # Formation de l'adresse de la homepage
-HOMEPAGE=$GITHUB/CQEN-QDCE/$DEPOT
+HOMEPAGE=$GITHUB/$OWNER/$DEPOT
 
 echo "Nom depot : " $DEPOT
-echo "Description: " $DESCRIPTION
+echo "Descrição: " $DESC
 echo "Homepage: " $HOMEPAGE
+echo "Visibilidade privado?: " $VISIB
 
-./02-creation-depot.sh "$DEPOT" "$DESC" "$HOMEPAGE"
+./02-creation-depot.sh "$DEPOT" "$DESC" "$HOMEPAGE" "$VISIB" "$ORG" "$OWNER"
 
 
 echo " "
 echo ${MAGENTA}"CREATION DES BRANCHES"${RESET}
 echo " "
 
-./03-branches-creation.sh "$DEPOT" "$PROFILE"
+./03-branches-creation.sh "$DEPOT" "$PROFILE" "$OWNER" "$ORG"
+
+
+echo " "
+echo ${MAGENTA}"INSERTION DES FICHIERS"${RESET}
+echo " "
+# La création automatisée des fichiers est suspendue, jusqu'à la solution du problème 
+# décrit dans l'issue Sign-off et signature de fichiers inclus via REST API 
+# (https://github.com/CQEN-QDCE/CreerDepotCQEN/issues/1). 
+./04-fichiers-creation.sh "$DEPOT" "$USERNAME" "$EMAIL" "$OWNER"
+
+#echo " "
+#echo ${MAGENTA}"MISE A JOUR DES PERMISSIONS D'EQUIPE"${RESET}
+#echo " "
+
+#./05-update-team-permissions.sh "$DEPOT"
 
 
 echo " "
 echo ${MAGENTA}"PROTECTION DES BRANCHES"${RESET}
 echo " "
 
-./06-branches-protection.sh "$DEPOT" "$PROFILE"
-
+./06-branches-protection.sh "$DEPOT" "$PROFILE" "$OWNER"
 
 echo " "
 echo ${MAGENTA}"CREATION DES ENVIRONNEMENTS"${RESET}
 echo " "
 
-./07-environnments-creation.sh "$DEPOT"
+./07-environnments-creation.sh "$DEPOT" "$PROFILE" "$OWNER"
 
+echo " "
+echo ${MAGENTA}"SUPPRIME LA BRANCHE MAIN"${RESET}
+echo " "
 
-# echo " "
-# echo ${MAGENTA}"SUPPRIME LA BRANCHE MAIN"${RESET}
-# echo " "
-
-# ./09-supprime-branche-main.sh "$DEPOT"
+./09-supprime-branche-main.sh "$DEPOT" "$OWNER" 

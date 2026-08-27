@@ -14,6 +14,7 @@ source ./couleurs.sh
 
 DEPOT=$1
 PROFILE=$2
+OWNER=$3
 
 #Protection de la branche prod
 
@@ -22,7 +23,7 @@ curl \
   -X PUT \
   -H "Accept: application/vnd.github+json" \
   -H "Authorization: token $AUTH" \
-  https://api.github.com/repos/torjc01/${DEPOT}/branches/prod/protection \
+  https://api.github.com/repos/${OWNER}/${DEPOT}/branches/prod/protection \
   -d '{
         "required_status_checks": null,
         "enforce_admins": true,
@@ -46,7 +47,7 @@ curl \
   -H "Accept: application/vnd.github+json" \
   -H "Content-type: application/json" \
   -H "Authorization: token $AUTH" \
-  https://api.github.com/repos/torjc01/${DEPOT}/branches/prod/protection/required_signatures
+  https://api.github.com/repos/${OWNER}/${DEPOT}/branches/prod/protection/required_signatures
 
 
 if [ $PROFILE -eq 2 ]
@@ -58,7 +59,7 @@ then
     -X PUT \
     -H "Accept: application/vnd.github+json" \
     -H "Authorization: token $AUTH" \
-    https://api.github.com/repos/torjc01/${DEPOT}/branches/pre-prod/protection \
+    https://api.github.com/repos/${OWNER}/${DEPOT}/branches/pre-prod/protection \
     -d '{
             "required_status_checks": null,
             "enforce_admins": true,
@@ -82,7 +83,7 @@ then
     -H "Accept: application/vnd.github+json" \
     -H "Content-type: application/json" \
     -H "Authorization: token $AUTH" \
-    https://api.github.com/repos/torjc01/${DEPOT}/branches/pre-prod/protection/required_signatures
+    https://api.github.com/repos/${OWNER}/${DEPOT}/branches/pre-prod/protection/required_signatures
 
     #
 fi
@@ -94,7 +95,7 @@ curl \
   -X PUT \
   -H "Accept: application/vnd.github+json" \
   -H "Authorization: token $AUTH" \
-  https://api.github.com/repos/torjc01/${DEPOT}/branches/dev/protection \
+  https://api.github.com/repos/${OWNER}/${DEPOT}/branches/dev/protection \
   -d '{
         "required_status_checks": null,
         "enforce_admins": true,
@@ -117,4 +118,4 @@ curl \
   -H "Accept: application/vnd.github+json" \
   -H "Content-type: application/json" \
   -H "Authorization: token $AUTH" \
-  https://api.github.com/repos/torjc01/${DEPOT}/branches/dev/protection/required_signatures
+  https://api.github.com/repos/${OWNER}/${DEPOT}/branches/dev/protection/required_signatures

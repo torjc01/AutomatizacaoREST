@@ -12,6 +12,12 @@
 set -e
 # set -vx  # Lance le script avec les sysouts pour débogage. Décommenter au cas du debogue.
 
+# === Carrega as variaveis de ambiente do arquivo .env
+if [ -f .env ]; then
+  #  export $(cat .env | sed 's/#.*//g' | xargs)
+    set -a
+    source .env
+fi
 # ==== Definition de couleurs === # 
 source ./couleurs.sh
 

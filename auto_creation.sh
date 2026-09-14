@@ -173,7 +173,7 @@ echo ""
 
 case $CONF in 
 
-    S|s)
+    S|s|Y|y|O|o)
         echo "Dados confirmados."
         ;;
     N|n)
